@@ -1,0 +1,41 @@
+---
+- name: Run Nginx Docker with custom HTML (simple)
+  hosts: web
+  become: true
+
+  vars:
+    nginx_port: 80
+
+  tasks:
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: true
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Pull nginx image
+      docker_image:
+        name: nginx
+        tag: alpine
+        source: pull
+
+    - name: Copy custom index.html to EC2
+      copy:
+        src: index.html
+        dest: /home/ubuntu/index.html
+        mode: '0644'
+        owner: ubuntu
+
+    - name: Run Nginx container with mounted custom index.html
+      shell: |
+        docker rm -f nginx || true
+        docker run -d --name nginx -p {{ nginx_port }}:80 \
+          -v /home/ubuntu/index.html:/usr/share/nginx/html/index.html:ro \
+          nginx:alpine
