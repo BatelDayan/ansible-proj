@@ -14,8 +14,6 @@ pipeline {
             returnStdout: true
           ).trim()
 
-          echo "Consul raw response: ${response}"
-
           try {
             def json = readJSON text: response
             def port = new String(json[0].Value.decodeBase64())
@@ -27,21 +25,21 @@ pipeline {
       }
     }
 
-    stage('Get AWS Credentials') {
+    stage('Get batel_key') {
       steps {
         script {
           def response = sh(
             script: """
               curl --silent --request GET \
                    --header "X-Vault-Token: ${MY_TOKEN}" \
-                   ${VAULT_ADDR}/v1/secret/data/ssh/imtec-key
+                   ${VAULT_ADDR}/v1/secret/data/ssh/batel_key
             """,
             returnStdout: true
           ).trim()
 
           try {
             def json = readJSON text: response
-            def imtec_key = json.data.data.key
+            def batel_key = json.data.data.key
           } catch (err) {
             echo "Failed to parse JSON: ${err}"
             error("Could not parse Vault response. Check if path is correct and Vault is unsealed.")
@@ -50,13 +48,13 @@ pipeline {
       }
     }
 
-    stage('use imtec_key') {
+    stage('use batel_key') {
       steps {
         script {
           sh """
-            ansible-playbook nginx.yml -i inventory.ini \
+            ansible-playbook playbook.yml -i inventory.ini \
             -e "nginx_port=${port}" \
-            --private-key=${imtec_key}
+            --private-key=${batel_key}
           """
         }
       }
