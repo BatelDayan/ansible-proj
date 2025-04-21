@@ -1,0 +1,12 @@
+# Dockerfile.agent
+FROM jenkins/inbound-agent:latest
+
+USER root
+
+# Install Ansible SSH and Python
+RUN apt-get update && \
+    apt-get install -y python3-pip sshpass && \
+    pip3 install ansible && \
+    apt-get clean
+
+USER jenkins
