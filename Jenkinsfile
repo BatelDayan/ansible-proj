@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent { label 'ansible-agent' }
   environment {
     VAULT_ADDR = 'http://vault:8200'
     MY_TOKEN = credentials('vault-token')

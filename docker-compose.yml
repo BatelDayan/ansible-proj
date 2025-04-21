@@ -17,7 +17,7 @@ services:
     environment:
       - JENKINS_URL=${JENKINS_URL}
       - JENKINS_AGENT_NAME=${JENKINS_AGENT_NAME}
-      - JENKINS_SECRET=${JENKINS_SECRET}
+      # - JENKINS_SECRET=${JENKINS_SECRET}
     depends_on:
       - jenkins
 
