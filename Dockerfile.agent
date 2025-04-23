@@ -3,10 +3,16 @@ FROM jenkins/inbound-agent:latest
 
 USER root
 
-# Install Ansible SSH and Python
+# Install Python, pip, venv and sshpass
 RUN apt-get update && \
-    apt-get install -y python3-pip sshpass && \
-    pip3 install ansible && \
+    apt-get install -y python3-pip python3-venv sshpass && \
+    python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install ansible && \
     apt-get clean
 
+# Add venv binaries to PATH so Ansible is available globally
+ENV PATH="/opt/venv/bin:$PATH"
+
 USER jenkins
+ENTRYPOINT ["jenkins-agent"]

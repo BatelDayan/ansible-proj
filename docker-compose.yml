@@ -62,6 +62,14 @@ services:
 
 volumes:
   jenkins_home:
+    external: true
+    name: devops-lab_jenkins_home
+
   consul_data:
+    external: true
+    name: devops-lab_consul_data
+
   vault_data:
+    external: true
+    name: devops-lab_vault_data
 
