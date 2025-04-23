@@ -1,7 +1,7 @@
 pipeline {
   agent { label 'ansible-agent' }
   environment {
-    VAULT_ADDR = 'http://vault:8200'
+    VAULT_ADDR = 'http://vault:8300'
     MY_TOKEN = credentials('vault-token')
   }
   stages {
