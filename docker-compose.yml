@@ -17,7 +17,7 @@ services:
     environment:
       - JENKINS_URL=${JENKINS_URL}
       - JENKINS_AGENT_NAME=${JENKINS_AGENT_NAME}
-      # - JENKINS_SECRET=${JENKINS_SECRET}
+      - JENKINS_SECRET=${JENKINS_SECRET}
     depends_on:
       - jenkins
 
@@ -33,25 +33,35 @@ services:
     restart: unless-stopped
 
   vault:
-    image: hashicorp/vault:latest
+    image: hashicorp/vault:1.15.3
     container_name: vault
-    ports: 
-      - "8200:8200"
-    environment:
-      - VAULT_ADDR=http://0.0.0.0:8200/
+    restart: unless-stopped
+    ports:
+      - "8300:8300"
     cap_add:
       - IPC_LOCK
+    environment:
+      VAULT_ADDR: "http://0.0.0.0:8300"
+      VAULT_LOCAL_CONFIG: |
+        {
+          "backend": {
+            "file": {
+              "path": "/vault/file"
+            }
+          },
+          "listener": {
+            "tcp": {
+              "address": "0.0.0.0:8300",
+              "tls_disable": 1
+            }
+          },
+          "ui": true
+        }
     volumes:
-      - ./vault/config:/vault/config
-      - ./vault/data:/vault/data
-      - ./vault/logs:/vault/logs
-    command: server
-    restart: unless-stopped
-  
+      - vault_data:/vault/file
 
 volumes:
   jenkins_home:
   consul_data:
   vault_data:
-  vault-logs:
-  vault-config:
+
