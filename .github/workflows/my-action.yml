@@ -1,7 +1,7 @@
 name: Deploy with Ansible (Manual)
 
 on:
-  workflow_dispatch:
+  push:
     inputs:
       nginx_port:
         description: 'Port for Nginx to listen on'
