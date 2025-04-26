@@ -1,0 +1,36 @@
+name: Deploy with Ansible (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      nginx_port:
+        description: 'Port for Nginx to listen on'
+        required: true
+        default: '8080'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code from main branch
+      uses: actions/checkout@v4
+      with:
+        ref: mendel
+
+    - name: Install Ansible
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ansible
+
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_BATEL_KEY }}" > ~/.ssh/ec2-batel-key
+        chmod 600 ~/.ssh/ec2-batel-key
+
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook playbook.yml -i inventory.ini \
+          -e "nginx_port=${{ github.event.inputs.nginx_port }}" \
+          --private-key=~/.ssh/ec2-batel-key
