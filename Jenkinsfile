@@ -54,7 +54,7 @@ pipeline {
       steps {
         script {
           sh """
-            ansible-playbook nginx.yml -i inventory.ini \
+            ansible-playbook playbook.yml -i inventory.ini \
             -e "nginx_port=${port}" \
             --private-key=${imtec_key}
           """
